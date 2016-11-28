@@ -15,12 +15,15 @@ class MobileObject # this type of object inherits laws of physics.  other object
   def_delegators :image, :height, :width
   def_delegators :@position, :x, :y, :z
 
-  physics :gravity 
+  physics :gravity, :velocity, :friction
 
   attr_reader :x_scale, :y_scale
+  attr_accessor :x_velocity, :y_velocity
 
   def initialize(position = nil)
     @position = position || Position.new(0, 0, 1)
+    @x_velocity = 0
+    @y_velocity = 0 # are velocities prat of positoin?
     setup_physics
     setup_visuals
   end 
@@ -36,9 +39,26 @@ class MobileObject # this type of object inherits laws of physics.  other object
     @position = new_pos
   end
 
-  # def force(direction, delta, max)
+  def force(direction, delta, hmax: nil, vmax: nil)
+    case direction
+      when :left  then @x_velocity -= delta
+      when :right then @x_velocity += delta
+      when :up    then @y_velocity += delta
+      when :down  then @y_velocity -= delta
+    end 
 
-  # end
+    # action leading to force has a top speed: max
+    # does character have a top speed distinct form that?
+    if hmax
+      @x_velocity = hmax if @x_velocity > hmax
+      @x_velocity = -hmax if @x_velocity < -hmax
+    end 
+
+    if vmax
+      @y_velocity = vmax if @y_velocity > vmax
+      @y_velocity = -vmax if @y_velocity < -vmax
+    end 
+  end
 
   private
 
@@ -48,7 +68,7 @@ class MobileObject # this type of object inherits laws of physics.  other object
   end
 
   def setup_physics
-    Collidables.register(self)
+    # Collidables.register(self)
 
     self.class.physics.each do |law|
       Physics[law].new(self)
@@ -79,8 +99,8 @@ class Character < MobileObject
   def walk(direction)
     @moving = true
     face direction
-    move direction, @walk_speed
-    # force direction, 10, 15 # dir, delta, max
+    # move direction, @walk_speed
+    force direction, 10, hmax: 15 # dir, delta, max
   end
 
   def unwalk
@@ -88,7 +108,8 @@ class Character < MobileObject
   end
 
   def jump
-    move :up, 20
+    # move :up, 20
+    force :up, 20
   end
 
   def face(direction)

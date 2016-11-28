@@ -1,3 +1,11 @@
+
+
+
+__END__
+
+TODO: how to collide?
+idea: drawing each frame we know how much time has gone by since last frame.  figure out the time when objects would have hit.
+
 # takes place when an actor moves.  not world movement, so not in physics.  maybe physics -> worldphysics or world
 module Collidables
   def self.register(object)
