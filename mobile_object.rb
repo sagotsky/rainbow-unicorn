@@ -18,12 +18,13 @@ class MobileObject # this type of object inherits laws of physics.  other object
   physics :gravity, :velocity, :friction
 
   attr_reader :x_scale, :y_scale
-  attr_accessor :x_velocity, :y_velocity
+  attr_accessor :x_velocity, :y_velocity, :last_frame_ms
 
   def initialize(position = nil)
     @position = position || Position.new(0, 0, 1)
     @x_velocity = 0
     @y_velocity = 0 # are velocities prat of positoin?
+    @last_frame_ms = Gosu::milliseconds
     setup_physics
     setup_visuals
   end 
@@ -93,6 +94,7 @@ class Character < MobileObject
     @assets = Gosu::Image::load_tiles('unicorn-sprite.png', 150, 120)
 
     @moving = false
+    @jumping = false
     @walk_speed = 10
   end
 
@@ -108,8 +110,16 @@ class Character < MobileObject
   end
 
   def jump
-    # move :up, 20
-    force :up, 20
+    unless jumping?
+      force :up, 50, vmax: 10 
+      @jumped_at = Gosu::milliseconds
+    end 
+  end
+
+  # doesn't account for landing..
+  def jumping?
+    return unless @jumped_at
+    @jumped_at && (@jumped_at > Gosu::milliseconds - 500)
   end
 
   def face(direction)

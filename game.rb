@@ -76,16 +76,28 @@ class Window < Gosu::Window
     @current = 1
     @scale_x = 1
     @scale_y = 1
+
+    @last_ms = 0
   end
 
   def update
+    delta_time_update 
     input_update
     physics_update
-    log_update
+    # log_update
+  end
+
+  def delta_time_update
+    # gosu give us current ms, but not prev.  let's just attach it there.
+    Gosu.send :remove_const, :DELTA if Gosu.const_defined?(:DELTA)
+    Gosu.const_set(:DELTA, Gosu::milliseconds - @last_ms)
+    @last_ms = Gosu::milliseconds
   end
 
   def log_update
-    puts Gosu::milliseconds
+    @last ||=0
+    puts Gosu::milliseconds - @last
+    @last = Gosu::milliseconds
   end
 
   def input_update
@@ -103,11 +115,11 @@ class Window < Gosu::Window
     end 
 
     if Gosu::button_down?(Gosu::KbUp)
-      @player.walk :up
+      # @player.walk :up
     end 
 
     if Gosu::button_down?(Gosu::KbDown)
-      @player.walk :down
+      # @player.walk :down
     end
 
     if Gosu::button_down?(Gosu::KbSpace)

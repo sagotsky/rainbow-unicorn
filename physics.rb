@@ -27,7 +27,10 @@ class Physics::Gravity < Physics
 
   def update
     # @object.move :down, THE_CONSTANT_DOWNWARD_PULL
-    @object.force :down, THE_CONSTANT_DOWNWARD_PULL
+    # this should also tick per frame
+    # @object.force :down, THE_CONSTANT_DOWNWARD_PULL 
+    dt = Gosu::DELTA
+    @object.force :down, dt / 15
   end
 end
 
@@ -39,8 +42,15 @@ class Physics::Velocity < Physics
     #   @object.move direction, sped
     # end
 
-    @object.move :right, @object.x_velocity
-    @object.move :up, @object.y_velocity
+    dt = Gosu::DELTA
+    x = dt * @object.x_velocity / 15
+    y = dt * @object.y_velocity / 15
+    # wtf is this 15?  confused by lack of units.
+
+    @object.move :right, x
+    @object.move :up, y
+
+    @object.last_frame_ms = Gosu::milliseconds
   end
 end
 
