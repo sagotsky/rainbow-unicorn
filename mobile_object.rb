@@ -24,9 +24,13 @@ class MobileObject # this type of object inherits laws of physics.  other object
     @position = position || Position.new(0, 0, 1)
     @x_velocity = 0
     @y_velocity = 0 # are velocities prat of positoin?
+
+    @x_scale = 1.0
+    @y_scale = 1.0
+
     @last_frame_ms = Gosu::milliseconds
     setup_physics
-    setup_visuals
+    Renderer << self # is this always the case?
   end 
 
   def move(direction, distance)
@@ -75,10 +79,6 @@ class MobileObject # this type of object inherits laws of physics.  other object
       Physics[law].new(self)
     end
   end
-
-  def setup_visuals
-    Visuals.register self
-  end
 end
 
 class Character < MobileObject
@@ -88,14 +88,12 @@ class Character < MobileObject
     super
     @dims = Dimensions.new(50, 100)
 
-    @x_scale = 1.0
-    @y_scale = 1.0
-
     @assets = Gosu::Image::load_tiles('unicorn-sprite.png', 150, 120)
 
     @moving = false
     @jumping = false
     @walk_speed = 10
+    @facing = :right
   end
 
   def walk(direction)
@@ -123,6 +121,7 @@ class Character < MobileObject
   end
 
   def face(direction)
+    @facing = direction
     case direction
     when :left  
       new_x_scale = -1.0
@@ -149,26 +148,51 @@ end
 
 
 class Player < Character
-  def fart
-    speed = -10 # determined by facing direction
-    Fart.new(position, speed, 0)
+  def poop
+    pooping?
+    return if pooping?
+    @pooped_at = Gosu::milliseconds
+
+    force @facing, 3, hmax: 5 # dir, delta, max
+    butt_location = Position.new(x-50, y+height/2, 0)
+    Poop.new(butt_location ).force(reverse_facing, 15)
   end
+
+  def pooping?
+    @pooped_at && (@pooped_at > Gosu::milliseconds - 500)
+  end
+
+  def reverse_facing
+    @facing == :left ? :right : :left
+  end
+
 end
 
-class Projectile < MobileObject
-  def initialize(position, x_velocity, y_velocity)
-    @position = position
-    @x_velocity = x_velocity
-    @y_velocity = y_velocity
+class Poop < MobileObject
+  def initialize(position)
+    super(position)
+    @image = Gosu::Image.new('unicorn-poop.png')
+    @x_scale -= Random.rand/2
+    @y_scale -= Random.rand/2
+    @height = 100 * @y_scale
+    break_wind
   end
-end
 
-class Fart < Projectile
-  def geometry
-    [x, y, Gosu::Color::GREEN,
-     x + 10, y, Gosu::Color::RED,
-     x, y + 3, Gosu::Color::YELLOW,
-     x + 10, y + 3, Gosu::Color::BLUE,
-    ]
+  def image
+    @image
   end
+
+  # scaling doesn't scale image height.  more proof that htat's a bad abstraction
+  def height
+    @height
+  end
+
+  # can we jiggle it with some weird update hook?
+
+  private
+
+  def break_wind
+    Gosu::Sample.new('le-shart.wav').play
+  end
+
 end

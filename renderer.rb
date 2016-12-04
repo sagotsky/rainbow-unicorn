@@ -1,7 +1,24 @@
 # draws an object.  object must provide x,y,z, and image
 class Renderer
+  class << self
+    def <<(object)
+      renderables << object
+    end
+
+    def renderables
+      @renderables ||= Set.new
+    end
+
+  end
+
   def initialize(screen)
     @screen = screen
+  end
+
+  def draw_all
+    self.class.renderables.each do |object|
+      draw object
+    end
   end
 
   # does a game object need a different name?

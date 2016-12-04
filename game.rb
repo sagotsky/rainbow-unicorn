@@ -10,7 +10,6 @@ require_relative 'renderer'
 require_relative 'fixed_object'
 require_relative 'mobile_object'
 require_relative 'collidables'
-require_relative 'visuals'
 
 # can't remember this math....
 # class Velocity
@@ -120,7 +119,14 @@ class Window < Gosu::Window
 
     if Gosu::button_down?(Gosu::KbDown)
       # @player.walk :down
+      @player.poop
     end
+    
+    # if button_up(Gosu::KbDown)
+    # doesn't appear to be implemented?!!?
+    #   puts 'released'
+    #   @player.unpoop
+    # end
 
     if Gosu::button_down?(Gosu::KbSpace)
       @player.jump
@@ -135,8 +141,9 @@ class Window < Gosu::Window
   def draw
     background.draw 0, 0, 0, @scale_x, @scale_y
 
-    @renderer.draw @player
-    @renderer.draw @the_ground
+    # @renderer.draw @player
+    # @renderer.draw @the_ground
+    @renderer.draw_all
   end
 
   private

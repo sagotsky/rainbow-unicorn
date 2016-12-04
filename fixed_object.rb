@@ -6,6 +6,7 @@ class FixedObject
     @width = width
     @height = height
     @z = 100
+    Renderer << self
   end
 
   # one quad per object seems dumb...
@@ -19,3 +20,27 @@ class FixedObject
   end
 end
 
+# class FixedImage
+#   attr_reader :x, :y, :width, :height, :z, :x_scale, :y_scale
+#   def initialize(x, y, w, h, image)
+#     @x = x
+#     @y = y
+#     @width = w
+#     @height = h
+#     @image = Gosu::Image::load_tiles(image, 135, 100)
+#     @z = 10
+#     size = (Random.rand + 0.5)/2
+#     @x_scale = size
+#     @y_scale = size
+#     Renderer << self
+#   end
+
+#   def image
+#     @image.first
+#   end
+# end
+
+# # class Poop < FixedImage
+# #   physics :gravity
+
+# # end

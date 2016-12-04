@@ -26,6 +26,7 @@ class Physics::Gravity < Physics
   THE_CONSTANT_DOWNWARD_PULL = 7
 
   def update
+    puts @object
     # @object.move :down, THE_CONSTANT_DOWNWARD_PULL
     # this should also tick per frame
     # @object.force :down, THE_CONSTANT_DOWNWARD_PULL 
