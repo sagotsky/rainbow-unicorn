@@ -85,8 +85,9 @@ class Character < MobileObject
   # delegate coords to position
   
   def initialize
-    super
-    @dims = Dimensions.new(50, 100)
+    super(Position.new(100, 100, 1))
+    # @dims = Dimensions.new(50, 100) # what this do?⎈:w
+    
 
     @assets = Gosu::Image::load_tiles('unicorn-sprite.png', 150, 120)
 
