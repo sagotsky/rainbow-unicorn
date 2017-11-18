@@ -9,7 +9,7 @@ class MobileObject # this type of object inherits laws of physics.  other object
       laws.each {|law| @@physics << law }
       @@physics
     end
-  end 
+  end
 
   extend Forwardable
   def_delegators :image, :height, :width
@@ -31,7 +31,7 @@ class MobileObject # this type of object inherits laws of physics.  other object
     @last_frame_ms = Gosu::milliseconds
     setup_physics
     Renderer << self # is this always the case?
-  end 
+  end
 
   def move(direction, distance)
     new_pos = @position.project(direction, distance)
@@ -40,7 +40,9 @@ class MobileObject # this type of object inherits laws of physics.  other object
     # enemy: damage player
     # trampoline: add velocity to player
     # collisions = something(new_pos, bounding_box)
-    new_pos.y = 400 - height if new_pos.y + height > 400
+    # new_pos.y = 400 - height if new_pos.y + height > 400
+    new_pos.y = 1400 - height if new_pos.y + height > 1400
+
     @position = new_pos
   end
 
@@ -50,19 +52,19 @@ class MobileObject # this type of object inherits laws of physics.  other object
       when :right then @x_velocity += delta
       when :up    then @y_velocity += delta
       when :down  then @y_velocity -= delta
-    end 
+    end
 
     # action leading to force has a top speed: max
     # does character have a top speed distinct form that?
     if hmax
       @x_velocity = hmax if @x_velocity > hmax
       @x_velocity = -hmax if @x_velocity < -hmax
-    end 
+    end
 
     if vmax
       @y_velocity = vmax if @y_velocity > vmax
       @y_velocity = -vmax if @y_velocity < -vmax
-    end 
+    end
   end
 
   private
@@ -83,11 +85,11 @@ end
 
 class Character < MobileObject
   # delegate coords to position
-  
+
   def initialize
     super(Position.new(100, 100, 1))
     # @dims = Dimensions.new(50, 100) # what this do?⎈:w
-    
+
 
     @assets = Gosu::Image::load_tiles('unicorn-sprite.png', 150, 120)
 
@@ -110,9 +112,9 @@ class Character < MobileObject
 
   def jump
     unless jumping?
-      force :up, 50, vmax: 10 
+      force :up, 50, vmax: 10
       @jumped_at = Gosu::milliseconds
-    end 
+    end
   end
 
   # doesn't account for landing..
@@ -124,11 +126,11 @@ class Character < MobileObject
   def face(direction)
     @facing = direction
     case direction
-    when :left  
+    when :left
       new_x_scale = -1.0
       move(:right, width) if @x_scale != new_x_scale
       @x_scale = new_x_scale
-    when :right 
+    when :right
       new_x_scale = 1.0
       move :left, width if @x_scale != new_x_scale
       @x_scale = new_x_scale
@@ -138,11 +140,11 @@ class Character < MobileObject
   def image
     # image controls w/h right now.  instead it should render based on obj's w/h.
     if @moving
-      step = (Gosu::milliseconds/100 % @assets.size) 
-      @assets[step] 
-    else 
+      step = (Gosu::milliseconds/100 % @assets.size)
+      @assets[step]
+    else
       @assets.first
-    end 
+    end
   end
 end
 

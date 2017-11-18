@@ -28,7 +28,7 @@ class Physics::Gravity < Physics
   def update
     # @object.move :down, THE_CONSTANT_DOWNWARD_PULL
     # this should also tick per frame
-    # @object.force :down, THE_CONSTANT_DOWNWARD_PULL 
+    # @object.force :down, THE_CONSTANT_DOWNWARD_PULL
     dt = Gosu::DELTA
     @object.force :down, dt / 15
   end
@@ -59,7 +59,7 @@ class Physics::Friction < Physics
   # walking on platform should be just like ground
   # moving platform should not slip away from player, but have otherwise normal friction.
 
-   
+
   def update
     # object.touching.map(&:frictions).each...
     if @object.x_velocity > 0
@@ -69,7 +69,18 @@ class Physics::Friction < Physics
     if @object.x_velocity < 0
       @object.x_velocity += 1
     end
-  end 
+  end
 
   # is wall friciton a thang?
+end
+
+class Physics::TheGround < Physics
+  # early attempt at a static collidable
+  # probably going to go away after this informs us a bit better about collisions
+
+  def update
+    if @object.position.y + @object.height > @window.floor
+      @object.position.y = @window.floor - @object.height
+    end
+  end
 end

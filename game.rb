@@ -55,22 +55,34 @@ class Dimensions
   attr_accessor :width, :height
 
   def initialize(width, height)
-    @width = width, @height = height
+    @width = width
+    @height = height
+  end
+
+  def h
+    height
+  end
+
+  def w
+    width
   end
 end
 
 class Window < Gosu::Window
   def initialize
-    super(640, 480)
+    @viewport = Dimensions.new(2000, 1500)
+    super(@viewport.w, @viewport.h)
+
     self.caption = 'game time'
 
     @backgrounds = Dir["/home/sagotsky/.wallpaper/*.jpg"].first(2).map do |file|
       Gosu::Image.new file
-    end 
+    end
 
     @renderer = Renderer.new(self)
     @player = Player.new
-    @the_ground = FixedObject.new(0, 400, 100, 640)
+    @ground_height = 100
+    @the_ground = FixedObject.new(0, @viewport.height - @ground_height, @ground_height, @viewport.width)
 
     @current = 1
     @scale_x = 1
@@ -80,7 +92,7 @@ class Window < Gosu::Window
   end
 
   def update
-    delta_time_update 
+    delta_time_update
     input_update
     physics_update
     # log_update
@@ -107,21 +119,21 @@ class Window < Gosu::Window
     # multiple keys?
     if Gosu::button_down?(Gosu::KbRight)
       @player.walk :right
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbLeft)
       @player.walk :left
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbUp)
       # @player.walk :up
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbDown)
       # @player.walk :down
       @player.poop
     end
-    
+
     # if button_up(Gosu::KbDown)
     # doesn't appear to be implemented?!!?
     #   puts 'released'
@@ -144,6 +156,11 @@ class Window < Gosu::Window
     # @renderer.draw @player
     # @renderer.draw @the_ground
     @renderer.draw_all
+  end
+
+  # meh.
+  def floor
+    @viewport.h
   end
 
   private
