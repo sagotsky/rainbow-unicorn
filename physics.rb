@@ -74,13 +74,18 @@ class Physics::Friction < Physics
   # is wall friciton a thang?
 end
 
-class Physics::TheGround < Physics
+class Physics::Ground < Physics
   # early attempt at a static collidable
   # probably going to go away after this informs us a bit better about collisions
 
   def update
-    if @object.position.y + @object.height > @window.floor
-      @object.position.y = @window.floor - @object.height
+    bottom = @object.y + @object.height
+    ground_y = @@window.floor - 100
+
+    if bottom > ground_y
+      @object.move :up, bottom - ground_y
+      @object.y_velocity = 0
     end
   end
 end
+

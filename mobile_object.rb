@@ -15,7 +15,10 @@ class MobileObject # this type of object inherits laws of physics.  other object
   def_delegators :image, :height, :width
   def_delegators :@position, :x, :y, :z
 
-  physics :gravity, :velocity, :friction
+  physics :gravity,
+    :velocity,
+    :friction,
+    :ground
 
   attr_reader :x_scale, :y_scale
   attr_accessor :x_velocity, :y_velocity, :last_frame_ms
@@ -41,7 +44,7 @@ class MobileObject # this type of object inherits laws of physics.  other object
     # trampoline: add velocity to player
     # collisions = something(new_pos, bounding_box)
     # new_pos.y = 400 - height if new_pos.y + height > 400
-    new_pos.y = 1400 - height if new_pos.y + height > 1400
+    # new_pos.y = 1400 - height if new_pos.y + height > 1400
 
     @position = new_pos
   end

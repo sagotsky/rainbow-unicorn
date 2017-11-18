@@ -171,4 +171,5 @@ class Window < Gosu::Window
 end
 
 
-Window.new.show
+@@window = Window.new
+@@window.show
