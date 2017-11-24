@@ -64,15 +64,13 @@ class Window < Gosu::Window
     super(640, 480)
     self.caption = 'game time'
 
-    @backgrounds = Dir["/home/sagotsky/.wallpaper/*.jpg"].first(2).map do |file|
-      Gosu::Image.new file
-    end 
+    @backgrounds = [Gosu::Image.new('assets/sunset.png')]
 
     @renderer = Renderer.new(self)
     @player = Player.new
     @the_ground = FixedObject.new(0, 400, 100, 640)
 
-    @current = 1
+    @current = 0
     @scale_x = 1
     @scale_y = 1
 
@@ -80,7 +78,7 @@ class Window < Gosu::Window
   end
 
   def update
-    delta_time_update 
+    delta_time_update
     input_update
     physics_update
     # log_update
@@ -107,21 +105,21 @@ class Window < Gosu::Window
     # multiple keys?
     if Gosu::button_down?(Gosu::KbRight)
       @player.walk :right
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbLeft)
       @player.walk :left
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbUp)
       # @player.walk :up
-    end 
+    end
 
     if Gosu::button_down?(Gosu::KbDown)
       # @player.walk :down
       @player.poop
     end
-    
+
     # if button_up(Gosu::KbDown)
     # doesn't appear to be implemented?!!?
     #   puts 'released'
