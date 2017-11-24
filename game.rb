@@ -75,9 +75,7 @@ class Window < Gosu::Window
 
     self.caption = 'game time'
 
-    @backgrounds = Dir["/home/sagotsky/.wallpaper/*.jpg"].first(2).map do |file|
-      Gosu::Image.new file
-    end
+    @backgrounds = [Gosu::Image.new('assets/sunset.png')]
 
     @renderer = Renderer.new(self)
     @player = Player.new
@@ -86,7 +84,7 @@ class Window < Gosu::Window
 
     @platform = FixedObject.new(500, 1350, 50, 60)
 
-    @current = 1
+    @current = 0
     @scale_x = 1
     @scale_y = 1
 
