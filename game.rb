@@ -84,6 +84,8 @@ class Window < Gosu::Window
     @ground_height = 100
     @the_ground = FixedObject.new(0, @viewport.height - @ground_height, @ground_height, @viewport.width)
 
+    @platform = FixedObject.new(500, 1350, 50, 60)
+
     @current = 1
     @scale_x = 1
     @scale_y = 1

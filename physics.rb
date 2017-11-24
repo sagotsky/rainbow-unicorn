@@ -89,3 +89,22 @@ class Physics::Ground < Physics
   end
 end
 
+class Physics::Platforms < Physics
+  def update
+    # loop over all the platofmrs.  see if we overlap.
+    # only platforms on screen?
+    platforms = FixedObject.all.select(&on_screen?)
+    # do we care what type of collision happens?  is going up different than down?
+
+    platforms.select do |p|
+      # let's just be explicit about squares for now.
+      a = Square.new(p.x, p.y, p.width, p.height)
+      b = Square.new(@object.x, @object.y, @object.w, @object.h)
+      Geometry.overlaps? a, b
+
+
+
+    end
+
+  end
+end

@@ -1,5 +1,13 @@
 # as mobile object
 class FixedObject
+  class << self
+    def all
+      @all ||= Set.new
+    end
+  end
+
+  attr_reader :x, :y, :width, :height
+
   def initialize(x, y, width, height)
     @x = x
     @y = y
@@ -7,16 +15,21 @@ class FixedObject
     @height = height
     @z = 100
     Renderer << self
+    FixedObject.all << self
   end
 
   # one quad per object seems dumb...
   def geometry
-    [ @x, @y, Gosu::Color::GREEN, 
+    [ @x, @y, Gosu::Color::GREEN,
       @x + @height, @y, Gosu::Color::GREEN,
       @x, @y + @width, Gosu::Color::YELLOW,
       @x + @height, @y + @width, Gosu::Color::YELLOW,
       @z
     ]
+  end
+
+  def on_screen?
+    true
   end
 end
 

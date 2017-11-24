@@ -18,7 +18,8 @@ class MobileObject # this type of object inherits laws of physics.  other object
   physics :gravity,
     :velocity,
     :friction,
-    :ground
+    :ground,
+    :platforms
 
   attr_reader :x_scale, :y_scale
   attr_accessor :x_velocity, :y_velocity, :last_frame_ms
@@ -200,5 +201,4 @@ class Poop < MobileObject
   def break_wind
     Gosu::Sample.new('le-shart.wav').play
   end
-
 end
