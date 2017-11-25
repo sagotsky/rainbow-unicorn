@@ -93,7 +93,7 @@ class Physics::Platforms < Physics
   def update
     # loop over all the platofmrs.  see if we overlap.
     # only platforms on screen?
-    platforms = FixedObject.all.select(&on_screen?)
+    platforms = FixedObject.all.select(&:on_screen?)
     # do we care what type of collision happens?  is going up different than down?
 
     platforms.select do |p|
