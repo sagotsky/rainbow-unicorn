@@ -23,8 +23,16 @@ class Renderer
 
   # does a game object need a different name?
   def draw(object)
-    draw_image(object) if object.respond_to?(:image)
-    draw_geometry(object) if object.respond_to?(:geometry)
+    case
+    when object.respond_to?(:image)
+      draw_image(object)
+    when object.respond_to?(:geometry)
+      draw_geometry(object)
+    when object.respond_to?(:draw)
+      object.draw(@screen) # should objects handle own drawing?  this one wants to do something special.  do others?
+    else
+      raise "cannot draw object #{object}"
+    end
   end
 
   private

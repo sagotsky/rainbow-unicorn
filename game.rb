@@ -9,6 +9,7 @@ require_relative 'patches'
 require_relative 'renderer'
 require_relative 'fixed_object'
 require_relative 'mobile_object'
+require_relative 'pixelated_object'
 require_relative 'collidables'
 
 # can't remember this math....
@@ -83,6 +84,8 @@ class Window < Gosu::Window
     @the_ground = FixedObject.new(0, @viewport.height - @ground_height, @ground_height, @viewport.width)
 
     @platform = FixedObject.new(500, 1350, 50, 60)
+
+    @something_pixely = PixelatedObject.new(200, 200, 800, 800)
 
     @current = 0
     @scale_x = 1
