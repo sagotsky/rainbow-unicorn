@@ -170,6 +170,7 @@ class Window < Gosu::Window
   end
 end
 
-
 @@window = Window.new
+console = Thread.new { pry @@window }
 @@window.show
+console.join
