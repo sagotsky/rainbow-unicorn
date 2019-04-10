@@ -49,7 +49,7 @@ class GameWindow < Gosu::Window
 
   def update
     PHYSICS_TICKS.times do
-      @space.step 10.0/600 #
+      @space.step 1.0/600 #
     end
   end
 end
@@ -102,24 +102,43 @@ class Entity
   end
 
   def draw
+    @body.angle += 1
+
     draw_image
-    draw_color
+    # draw_color
+    draw_poly
     draw_outline
   end
 
   private
 
   def draw_image
-    @image.draw @body.p.x, @body.p.y, 1 if @image
+    binding.pry
+    @image.draw_rot @body.p.x, @body.p.y, 1, @body.angle   if @image
+    # @image.draw_rot @body.p.x, @body.p.y, 1, @angle  * 180 / Math::PI if @image
   end
 
+  # just the bounding rect
   def draw_color
     return if @image
 
     args = bounding_rect.flat_map do |vec|
       [vec.x + x, vec.y + y, self.class::COLOR]
     end
-    $w.draw_quad *args, 1
+    @@w.draw_quad *args, 1
+  end
+
+  def draw_poly
+    return if @image
+
+    binding.pry
+    bounds.zip(bounds.rotate).each do |(a, b)|
+      @@w.draw_triangle(
+        a.x + x, a.y + y, self.class::COLOR,
+        b.x + x, b.y + y, self.class::COLOR,
+        x, y, self.class::COLOR,
+      )
+    end
   end
 
   # draw a bunch of quads around object.
@@ -140,7 +159,7 @@ class Entity
 
   def draw_thick_line(x1, y1, x2, y2, color, thickness: 6)
     thickness.times do |t|
-      $w.draw_line(
+      @@w.draw_line(
         (x1 + t), y1 + t, Gosu::Color::BLACK,
         (x2 + t), y2 + t, Gosu::Color::BLACK,
         2
@@ -151,7 +170,7 @@ end
 
 class Cannonball < Entity
   SPEED_LIMIT = 500
-  IMAGE_FILE = nil # 'unicorn-poop.png'
+  IMAGE_FILE = 'unicorn-poop.png'
   A = 500
   B = 500
 
@@ -306,12 +325,15 @@ class Turd < Entity
   end
 end
 
-$w = GameWindow.new
-c1 = Cannonball.new $w, 10, 100
-# t1 = Turd.new $w, 10, 200
-# t2 = Turd.new $w, 150, 200
+@@w = GameWindow.new
+c1 = Cannonball.new @@w, 10, 100
+
+# console = Thread.new { pry @@w }
+# t1 = Turd.new @@w, 10, 200
+# t2 = Turd.new @@w, 150, 200
 # t2.apply_impulse CP::Vec2.new(-2000.0, -1000.0), CP::Vec2.new(200000, 200000)
 # binding.pry # can add force?
-$w.show
+@@w.show
+# console.join
 
 
