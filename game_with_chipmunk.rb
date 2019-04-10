@@ -92,11 +92,13 @@ class Entity
 
   attr_reader :body, :w, :h
 
-  def initialize window, x, y
-    @body = CP::Body.new self.class::A, self.class::B
+  def initialize window, x, y, w = 100, h = 100
+    @body = CP::Body.new x, y # self.class::A, self.class::B
     @body.p = CP::Vec2.new x, y
     @body.v_limit = self.class::SPEED_LIMIT
     @image = Gosu::Image.new(self.class::IMAGE_FILE) if self.class::IMAGE_FILE
+    @w = w.to_f
+    @h = h.to_f
 
     window.add_object self
   end
@@ -104,36 +106,48 @@ class Entity
   def draw
     @body.angle += 1
 
-    draw_image
-    # draw_color
-    draw_poly
-    draw_outline
+    # Gosu.rotate @body.angle, @body.p.x + @image.width/2, @body.p.y + @image.height/2 do
+    Gosu.rotate @body.angle, mid_pt.x, mid_pt.y do
+      draw_image
+      draw_color
+      draw_poly
+      draw_outline
+    end
   end
 
   private
 
+  def mid_pt
+    CP::Vec2.new @body.p.x + w/2, @body.p.y + h/2
+  end
+
+  def scale_x
+    w / @image.width
+  end
+
+  def scale_y
+    h / @image.height
+  end
+
   def draw_image
-    binding.pry
-    @image.draw_rot @body.p.x, @body.p.y, 1, @body.angle   if @image
+    @image.draw @body.p.x, @body.p.y, 1, scale_x, scale_y  if @image
+    # @image.draw_rot @body.p.x, @body.p.y, 1, @body.angle   if @image
     # @image.draw_rot @body.p.x, @body.p.y, 1, @angle  * 180 / Math::PI if @image
   end
 
   # just the bounding rect
   def draw_color
-    return if @image
+    # return if @image
 
     args = bounding_rect.flat_map do |vec|
       [vec.x + x, vec.y + y, self.class::COLOR]
     end
-    @@w.draw_quad *args, 1
+    Gosu.draw_quad *args, 1
   end
 
   def draw_poly
-    return if @image
-
-    binding.pry
     bounds.zip(bounds.rotate).each do |(a, b)|
-      @@w.draw_triangle(
+      Gosu.draw_triangle(
         a.x + x, a.y + y, self.class::COLOR,
         b.x + x, b.y + y, self.class::COLOR,
         x, y, self.class::COLOR,
@@ -146,22 +160,25 @@ class Entity
   def draw_outline
     # can we just read in the image to figure out bounds?
     outline_points = bounds.zip(bounds.rotate)
+    max_x = outline_points.flatten.map(&:x).max
+    max_y = outline_points.flatten.map(&:y).max
+
     outline_points.each_with_index do |(a, b), i|
       color = Gosu::Color.rgb(i * 20, 255 - i*20, 100)
 
       draw_thick_line(
-        x + a.x, y + a.y,
-        x + b.x, y + b.y,
+        mid_pt.x + a.x - max_x / 2, mid_pt.y + a.y - max_y / 2,
+        mid_pt.x + b.x - max_x / 2, mid_pt.y + b.y - max_y / 2,
         color
       )
     end
   end
 
-  def draw_thick_line(x1, y1, x2, y2, color, thickness: 6)
+  def draw_thick_line(x1, y1, x2, y2, color, thickness: 1)
     thickness.times do |t|
-      @@w.draw_line(
-        (x1 + t), y1 + t, Gosu::Color::BLACK,
-        (x2 + t), y2 + t, Gosu::Color::BLACK,
+      Gosu.draw_line(
+        (x1 + t), y1 + t, Gosu::Color::GREEN,
+        (x2 + t), y2 + t, Gosu::Color::GREEN,
         2
       )
     end
@@ -325,15 +342,9 @@ class Turd < Entity
   end
 end
 
-@@w = GameWindow.new
-c1 = Cannonball.new @@w, 10, 100
-
-# console = Thread.new { pry @@w }
-# t1 = Turd.new @@w, 10, 200
-# t2 = Turd.new @@w, 150, 200
-# t2.apply_impulse CP::Vec2.new(-2000.0, -1000.0), CP::Vec2.new(200000, 200000)
-# binding.pry # can add force?
-@@w.show
-# console.join
-
+GameWindow.new.tap do |w|
+  Cannonball.new w, 10, 100, 50, 50
+  Cannonball.new w, 100, 100, 200, 200
+  w.show
+end
 
